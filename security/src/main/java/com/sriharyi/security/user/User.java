@@ -34,8 +34,8 @@ public class User implements UserDetails{
     @Field(targetType = FieldType.STRING)
     private Role role;
 
-    @DBRef(db = "tokens")
-    private List<Token> token;
+    // @DBRef(db = "tokens")
+    // private List<Token> token;
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

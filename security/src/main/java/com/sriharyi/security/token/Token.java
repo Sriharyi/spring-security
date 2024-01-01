@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collation = "tokens")
+@Document(collection =  "tokens")
 public class Token {
 
     @Id
@@ -32,7 +32,7 @@ public class Token {
 
     private Boolean revoked;
 
-    @DBRef(db = "users")
+    @DBRef()
     private User user;
 
 }

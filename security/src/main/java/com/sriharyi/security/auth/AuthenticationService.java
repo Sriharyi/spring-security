@@ -1,5 +1,7 @@
 package com.sriharyi.security.auth;
 
+import java.util.List;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,6 +47,24 @@ public class AuthenticationService {
                 .build();
     }
 
+    private void revokeAllUserTokens(User user)
+    {
+        List<Token> validUserTokens = tokenRepo.findActiveTokensByUserId(user.getId());
+        
+        if(validUserTokens.isEmpty())
+        {
+                return;
+        }
+
+        validUserTokens.forEach(
+                t -> {
+                        t.setExpired(true);
+                        t.setRevoked(true);
+                }
+        );
+        tokenRepo.saveAll(validUserTokens); 
+    }
+
     private void saveUserToken(User user, String token) {
         var usertoken = Token.builder()
                 .user(user)
@@ -64,6 +84,8 @@ public class AuthenticationService {
         var user = userRepo.findByEmail(request.getEmail()).orElseThrow();
 
         var jwt = jwtService.generateToken(user);
+
+        revokeAllUserTokens(user);
 
         saveUserToken(user, jwt);
 

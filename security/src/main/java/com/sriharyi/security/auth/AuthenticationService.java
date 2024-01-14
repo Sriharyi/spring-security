@@ -37,8 +37,11 @@ public class AuthenticationService {
                 .lastname(request.getLastnaem())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .role(Role.valueOf(request.getRole().toUpperCase()))
                 .build();
+        if (userRepo.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
         var savedUser = userRepo.save(user);
         var jwt = jwtService.generateToken(user);
         saveUserToken(savedUser, jwt);

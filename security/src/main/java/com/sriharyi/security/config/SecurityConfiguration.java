@@ -3,6 +3,7 @@ package com.sriharyi.security.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthfilter;
@@ -23,13 +25,18 @@ public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
 
     private final LogoutHandler logoutHandler;
+
+    private String[] permitAllEndpointList = {"/api/auth/**","/logging"};
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
     {
         http .csrf(csrf -> csrf.disable())
+                //the order of specifing the requestMatchers is important it always starts with the most specific one or decreasing order of specificity
+                //example: /api/auth/** should be specified before /api/** otherwise /api/auth/** will never be matched
+                //example: /brand/{*id} is permitted and /brand/select is not permitted that me it need to authicated so change the order of the requestMatchers is important
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("api/auth/**")
+                        .requestMatchers(permitAllEndpointList)
                         .permitAll()
                         .anyRequest()
                         .authenticated())
@@ -45,5 +52,4 @@ public class SecurityConfiguration {
             ;
       return http.build();
     }
-
 }

@@ -4,15 +4,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.sriharyi.security.token.Token;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,12 +31,9 @@ public class User implements UserDetails{
     @Field(targetType = FieldType.STRING)
     private Role role;
 
-    // @DBRef(db = "tokens")
-    // private List<Token> token;
-    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_"+role.name()));
     }
     @Override
     public String getUsername() {

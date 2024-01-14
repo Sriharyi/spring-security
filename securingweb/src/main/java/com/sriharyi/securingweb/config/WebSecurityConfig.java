@@ -31,7 +31,6 @@ public class WebSecurityConfig {
 
 		return http.build();
 	}
-
 	@Bean
 	public UserDetailsService userDetailsService() {
 

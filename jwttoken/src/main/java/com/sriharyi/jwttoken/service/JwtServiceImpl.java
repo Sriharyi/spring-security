@@ -1,5 +1,8 @@
 package com.sriharyi.jwttoken.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -18,9 +21,15 @@ public class JwtServiceImpl implements JwtService {
     // }
 
     public String getToken(String username) {
+        Map <String ,Object> map = new HashMap<>();
+        String role = "admin";
+        map.put("Role", role);
         Claims claim = Jwts.claims().setSubject(username);
+        claim.putAll(map);
         String token = Jwts.builder().setClaims(claim).signWith(SignatureAlgorithm.HS256, "secretkey").compact();
-        System.out.println(token);
+        Claims claims = Jwts.parser().setSigningKey("secretkey").parseClaimsJws(token).getBody();
+       String rolefromtoken =  claims.get("Role").toString();
+        System.out.println(rolefromtoken);
         return token;
     }
 
